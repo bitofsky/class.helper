@@ -14,7 +14,7 @@ npm install class.helper
 
 ## How to use
 ``` Javascript
-class A extends require('ClassHelper') {
+class A extends require('class.helper') {
 
     constructor(session, defaultValue) {
 
