@@ -1,0 +1,27 @@
+{
+    "name": "class.helper",
+    "version": "1.0.0",
+    "description": "Javascript class.helper module",
+    "main": "index.js",
+    "engines": {
+        "node": ">=6.0.0"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/bitofsky/class.helper.git"
+    },
+    "keywords": [
+        "Javascript",
+        "Nodejs",
+        "Class"
+    ],
+    "author": "Bum-Seok Hwang",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/bitofsky/class.helper/issues"
+    },
+    "homepage": "https://github.com/bitofsky/class.helper#readme"
+}
