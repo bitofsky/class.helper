@@ -4,11 +4,27 @@ const globalContainer = {};
 const sInstance = Symbol.for('class.helper instance');
 const sPrivate = Symbol.for('class.helper private');
 
+const HashList = {
+    'md5': str => require('crypto').createHash('md5').update(str).digest('hex'),
+    'xxhash32': str => require('xxhashjs').h32(str, 0xABCD).toString(16),
+    'xxhash64': str => require('xxhashjs').h64(str, 0xABCD).toString(16)
+};
+
+let HashAlgorithm = HashList.md5; // default
+
+function getHashKey(args) {
+
+    let key = args.join('\n');
+
+    try { key = HashAlgorithm(JSON.stringify(args)); } catch (e) { }
+
+    return key;
+
+}
+
 function getInstance(withoutContainer, container, ...args) {
 
-    let key = args[0];
-
-    try { key = require('crypto').createHash('md5').update(JSON.stringify(args)).digest('hex'); } catch (e) { }
+    let key = getHashKey(args);
 
     container[sInstance] = container[sInstance] || {};
     container[sInstance][this.name] = container[sInstance][this.name] || {};
@@ -41,6 +57,7 @@ class ClassHelper {
     static getInstanceGlobal(...args) { return getInstance.call(this, true, globalContainer, ...args); }
     static callInstanceGlobal(...args) { return callInstance.call(this, true, globalContainer, ...args); }
     get private() { return this[sPrivate] = this[sPrivate] || {}; }
+    static changeHashAlgorithm(hash) { HashAlgorithm = HashList[String(hash).toLowerCase()] || HashList.md5; }
 
 }
 
