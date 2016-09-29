@@ -1,9 +1,12 @@
 # class.helper
 NodeJS class.helper module
 
+## Feature
+1. ES6 Class private 
+1. Singleton pattern
+
 ## Requires
 ```
-ES6 Class/Promise
 node >= 6.0.0
 ```
 
@@ -14,7 +17,8 @@ npm install class.helper
 
 ## How to use
 ``` Javascript
-class A extends require('class.helper') {
+const ClassHelper = require('class.helper');
+class A extends ClassHelper {
 
     constructor(session, defaultValue) {
 
