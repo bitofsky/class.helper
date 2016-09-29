@@ -39,8 +39,8 @@ describe('Test - Singleton check', () => {
     }
 
     describe('MD5', () => doCheck('md5'));
-    describe('xxHash - 32bit', doCheck('xxhash32'));
-    describe('xxHash - 64bit', doCheck('xxhash64'));
+    describe('xxHash - 32bit', () => doCheck('xxhash32'));
+    describe('xxHash - 64bit', () => doCheck('xxhash64'));
 
 });
 
