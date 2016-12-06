@@ -48,12 +48,26 @@ function callInstance(withoutContainer, container, ...args) {
     });
 }
 
+function clearInstance(container, ...args) {
+
+    let key = getHashKey(args);
+
+    container[sInstance] = container[sInstance] || {};
+    container[sInstance][this.name] = container[sInstance][this.name] || {};
+
+    delete container[sInstance][this.name][key];
+
+    return true;
+
+}
+
 class ClassHelper {
 
     static getInstance(container, ...args) { return getInstance.call(this, false, container, ...args); }
     static callInstance(container, ...args) { return callInstance.call(this, false, container, ...args); }
-    static getInstanceWC(container, ...args) { return getInstance.call(this, true, container, ...args); }
-    static callInstanceWC(container, ...args) { return callInstance.call(this, true, container, ...args); }
+    static getInstanceWC(container, ...args) { return getInstance.call(this, true, container || {}, ...args); }
+    static callInstanceWC(container, ...args) { return callInstance.call(this, true, container || {}, ...args); }
+    static clearInstance(container, ...args) { return clearInstance.call(this, container, ...args); }
     static getInstanceGlobal(...args) { return getInstance.call(this, true, globalContainer, ...args); }
     static callInstanceGlobal(...args) { return callInstance.call(this, true, globalContainer, ...args); }
     get private() { return this[sPrivate] = this[sPrivate] || {}; }
