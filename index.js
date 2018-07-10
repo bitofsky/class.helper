@@ -25,7 +25,7 @@ function __getInstance(cls, withoutContainer, container, ...args) {
         (withoutContainer ?
             new cls(...args) :
             new cls(container, ...args));
-    return Promise.resolve(instance);
+    return instance;
 }
 function __clearInstance(cls, container, ...args) {
     const key = getHashKey(args);

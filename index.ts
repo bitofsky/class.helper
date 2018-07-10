@@ -39,7 +39,7 @@ function __getInstance<T>(cls: { new(...args: any[]): T }, withoutContainer: boo
                 new cls(container, ...args)
         );
 
-    return Promise.resolve(instance);
+    return instance;
 
 }
 
