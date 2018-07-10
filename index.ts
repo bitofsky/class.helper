@@ -1,6 +1,7 @@
 'use strict';
 
 import * as Crypto from 'crypto';
+import { NOTINITIALIZED } from 'dns';
 
 const globalContainer = {};
 const sInstance = Symbol.for('class.helper instance');
@@ -31,12 +32,14 @@ function __getInstance<T>(cls: { new(...args: any[]): T }, withoutContainer: boo
     container[sInstance] = container[sInstance] || {};
     container[sInstance][cls.name] = container[sInstance][cls.name] || {};
 
-    return container[sInstance][cls.name][key] = <T>container[sInstance][cls.name][key] ||
+    const instance = container[sInstance][cls.name][key] = <T>container[sInstance][cls.name][key] ||
         (
             withoutContainer ?
                 new cls(...args) :
                 new cls(container, ...args)
         );
+
+    return Promise.resolve(instance);
 
 }
 
