@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
-        "target": "es2017",
-        "module": "none",
+        "target": "es5",
+        "module": "commonjs",
         "moduleResolution": "node",
         "sourceMap": true,
         "emitDecoratorMetadata": true,
@@ -16,7 +16,7 @@
             "es2017"
         ],
         "allowJs": false,
-        "declaration": false,
+        "declaration": true,
         "removeComments": false,
         "baseUrl": ".",
         "paths": {

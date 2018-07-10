@@ -24,40 +24,30 @@ function getHashKey(args: any[]) {
 
 }
 
-function getInstance(withoutContainer: boolean, container: object, ...args: any[]) {
+function __getInstance<T>(cls: { new(...args: any[]): T }, withoutContainer: boolean, container: object, ...args: any[]) {
 
-    let key = getHashKey(args);
+    const key = getHashKey(args);
 
     container[sInstance] = container[sInstance] || {};
-    container[sInstance][this.name] = container[sInstance][this.name] || {};
+    container[sInstance][cls.name] = container[sInstance][cls.name] || {};
 
-    return container[sInstance][this.name][key] = container[sInstance][this.name][key] ||
+    return container[sInstance][cls.name][key] = <T>container[sInstance][cls.name][key] ||
         (
             withoutContainer ?
-                new this(...args) :
-                new this(container, ...args)
+                new cls(...args) :
+                new cls(container, ...args)
         );
 
 }
 
-function callInstance(withoutContainer: boolean, container: object, ...args: any[]) {
-    return (method: string, ...callArgs: any[]) => Promise.resolve(
-        getInstance.call(this, withoutContainer, container, ...args)
-    ).then(o => {
-        if (typeof o[method] !== 'function')
-            throw new Error(`class.helper.callInstance : undefined method (${this.name}.${method})`);
-        return o[method](...callArgs);
-    });
-}
+function __clearInstance<T>(cls: { new(...args: any[]): T }, container: object, ...args: any[]) {
 
-function clearInstance(container: object, ...args: any[]) {
-
-    let key = getHashKey(args);
+    const key = getHashKey(args);
 
     container[sInstance] = container[sInstance] || {};
-    container[sInstance][this.name] = container[sInstance][this.name] || {};
+    container[sInstance][cls.name] = container[sInstance][cls.name] || {};
 
-    delete container[sInstance][this.name][key];
+    delete container[sInstance][cls.name][key];
 
     return true;
 
@@ -65,16 +55,30 @@ function clearInstance(container: object, ...args: any[]) {
 
 class ClassHelper {
 
-    static getInstance(container: object, ...args: any[]) { return getInstance.call(this, false, container, ...args); }
-    static callInstance(container: object, ...args: any[]) { return callInstance.call(this, false, container, ...args); }
-    static getInstanceWC(container: object, ...args: any[]) { return getInstance.call(this, true, container || {}, ...args); }
-    static callInstanceWC(container: object, ...args: any[]) { return callInstance.call(this, true, container || {}, ...args); }
-    static clearInstance(container: object, ...args: any[]) { return clearInstance.call(this, container, ...args); }
-    static getInstanceGlobal(...args: any[]) { return getInstance.call(this, true, globalContainer, ...args); }
-    static callInstanceGlobal(...args: any[]) { return callInstance.call(this, true, globalContainer, ...args); }
-    get private() { return this[sPrivate] = this[sPrivate] || {}; }
-    static changeHashAlgorithm(hash: string) { HashAlgorithm = HashList[String(hash).toLowerCase()] || HashList.md5; }
+    static getInstance<T>(this: { new(...args: any[]): T }, container: object, ...args: any[]) {
+        return __getInstance(this, false, container, ...args)
+    }
+
+    static getInstanceWC<T>(container: object, ...args: any[]) {
+        return __getInstance(this, true, container || {}, ...args);
+    }
+
+    static getInstanceGlobal<T>(...args: any[]) {
+        return __getInstance(this, true, globalContainer, ...args);
+    }
+
+    static clearInstance<T>(container: object, ...args: any[]) {
+        return __clearInstance(this, container, ...args);
+    }
+
+    static changeHashAlgorithm(hash: string) {
+        HashAlgorithm = HashList[String(hash).toLowerCase()] || HashList.md5;
+    }
+
+    get private() {
+        return this[sPrivate] = <object>this[sPrivate] || {};
+    }
 
 }
 
-module.exports = ClassHelper;
+export = ClassHelper;

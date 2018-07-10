@@ -1,56 +1,86 @@
 'use strict';
-Object.defineProperty(exports, "__esModule", { value: true });
-const Crypto = require("crypto");
-const globalContainer = {};
-const sInstance = Symbol.for('class.helper instance');
-const sPrivate = Symbol.for('class.helper private');
-const HashList = {
-    'md5': (str) => Crypto.createHash('md5').update(str).digest('hex'),
-    'xxhash32': (str) => require('xxhashjs').h32(str, 0xABCD).toString(16),
-    'xxhash64': (str) => require('xxhashjs').h64(str, 0xABCD).toString(16)
+var Crypto = require("crypto");
+var globalContainer = {};
+var sInstance = Symbol.for('class.helper instance');
+var sPrivate = Symbol.for('class.helper private');
+var HashList = {
+    'md5': function (str) { return Crypto.createHash('md5').update(str).digest('hex'); },
+    'xxhash32': function (str) { return require('xxhashjs').h32(str, 0xABCD).toString(16); },
+    'xxhash64': function (str) { return require('xxhashjs').h64(str, 0xABCD).toString(16); }
 };
-let HashAlgorithm = HashList.md5; // default
+var HashAlgorithm = HashList.md5; // default
 function getHashKey(args) {
-    let key = args.join('\n');
+    var key = args.join('\n');
     try {
         key = HashAlgorithm(JSON.stringify(args));
     }
     catch (e) { }
     return key;
 }
-function getInstance(withoutContainer, container, ...args) {
-    let key = getHashKey(args);
+function __getInstance(cls, withoutContainer, container) {
+    var args = [];
+    for (var _i = 3; _i < arguments.length; _i++) {
+        args[_i - 3] = arguments[_i];
+    }
+    var key = getHashKey(args);
     container[sInstance] = container[sInstance] || {};
-    container[sInstance][this.name] = container[sInstance][this.name] || {};
-    return container[sInstance][this.name][key] = container[sInstance][this.name][key] ||
-        (withoutContainer ?
-            new this(...args) :
-            new this(container, ...args));
+    container[sInstance][cls.name] = container[sInstance][cls.name] || {};
+    return container[sInstance][cls.name][key] = container[sInstance][cls.name][key] ||
+        (withoutContainer ? new (cls.bind.apply(cls, [void 0].concat(args)))() : new (cls.bind.apply(cls, [void 0, container].concat(args)))());
 }
-function callInstance(withoutContainer, container, ...args) {
-    return (method, ...callArgs) => Promise.resolve(getInstance.call(this, withoutContainer, container, ...args)).then(o => {
-        if (typeof o[method] !== 'function')
-            throw new Error(`class.helper.callInstance : undefined method (${this.name}.${method})`);
-        return o[method](...callArgs);
-    });
-}
-function clearInstance(container, ...args) {
-    let key = getHashKey(args);
+function __clearInstance(cls, container) {
+    var args = [];
+    for (var _i = 2; _i < arguments.length; _i++) {
+        args[_i - 2] = arguments[_i];
+    }
+    var key = getHashKey(args);
     container[sInstance] = container[sInstance] || {};
-    container[sInstance][this.name] = container[sInstance][this.name] || {};
-    delete container[sInstance][this.name][key];
+    container[sInstance][cls.name] = container[sInstance][cls.name] || {};
+    delete container[sInstance][cls.name][key];
     return true;
 }
-class ClassHelper {
-    static getInstance(container, ...args) { return getInstance.call(this, false, container, ...args); }
-    static callInstance(container, ...args) { return callInstance.call(this, false, container, ...args); }
-    static getInstanceWC(container, ...args) { return getInstance.call(this, true, container || {}, ...args); }
-    static callInstanceWC(container, ...args) { return callInstance.call(this, true, container || {}, ...args); }
-    static clearInstance(container, ...args) { return clearInstance.call(this, container, ...args); }
-    static getInstanceGlobal(...args) { return getInstance.call(this, true, globalContainer, ...args); }
-    static callInstanceGlobal(...args) { return callInstance.call(this, true, globalContainer, ...args); }
-    get private() { return this[sPrivate] = this[sPrivate] || {}; }
-    static changeHashAlgorithm(hash) { HashAlgorithm = HashList[String(hash).toLowerCase()] || HashList.md5; }
-}
+var ClassHelper = /** @class */ (function () {
+    function ClassHelper() {
+    }
+    ClassHelper.getInstance = function (container) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        return __getInstance.apply(void 0, [this, false, container].concat(args));
+    };
+    ClassHelper.getInstanceWC = function (container) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        return __getInstance.apply(void 0, [this, true, container || {}].concat(args));
+    };
+    ClassHelper.getInstanceGlobal = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        return __getInstance.apply(void 0, [this, true, globalContainer].concat(args));
+    };
+    ClassHelper.clearInstance = function (container) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        return __clearInstance.apply(void 0, [this, container].concat(args));
+    };
+    ClassHelper.changeHashAlgorithm = function (hash) {
+        HashAlgorithm = HashList[String(hash).toLowerCase()] || HashList.md5;
+    };
+    Object.defineProperty(ClassHelper.prototype, "private", {
+        get: function () {
+            return this[sPrivate] = this[sPrivate] || {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return ClassHelper;
+}());
 module.exports = ClassHelper;
 //# sourceMappingURL=index.js.map
