@@ -59,18 +59,22 @@ function __clearInstance<T>(cls: { new(...args: any[]): T }, container: object, 
 class ClassHelper {
 
     static getInstance<T>(this: { new(...args: any[]): T }, container: object, ...args: any[]) {
-        return __getInstance(this, false, container, ...args)
+        return __getInstance(this, false, container, ...args);
     }
 
-    static getInstanceWC<T>(container: object, ...args: any[]) {
+    static async getAsync<T>(this: { new(...args: any[]): T }, container: object, ...args: any[]) {
+        return __getInstance(this, false, container, ...args);
+    }
+
+    static getInstanceWC<T>(this: { new(...args: any[]): T }, container: object, ...args: any[]) {
         return __getInstance(this, true, container || {}, ...args);
     }
 
-    static getInstanceGlobal<T>(...args: any[]) {
+    static getInstanceGlobal<T>(this: { new(...args: any[]): T }, ...args: any[]) {
         return __getInstance(this, true, globalContainer, ...args);
     }
 
-    static clearInstance<T>(container: object, ...args: any[]) {
+    static clearInstance<T>(this: { new(...args: any[]): T }, container: object, ...args: any[]) {
         return __clearInstance(this, container, ...args);
     }
 
@@ -79,7 +83,7 @@ class ClassHelper {
     }
 
     get private() {
-        return this[sPrivate] = <object>this[sPrivate] || {};
+        return this[sPrivate] = this[sPrivate] || {};
     }
 
 }

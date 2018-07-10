@@ -4,12 +4,16 @@ module.exports = {
         "node": true,
         "browser": true,
         "amd": true,
-        "mocha": true
+        "mocha": true,
     },
     "extends": "eslint:recommended",
     "globals": {
-        "$adm": true,
-        "$E": true
+    },
+    "parserOptions": {
+        "ecmaVersion": 2017,
+        "ecmaFeatures": {
+            "experimentalObjectRestSpread": true
+        }
     },
     "rules": {
         "indent": [
@@ -36,5 +40,8 @@ module.exports = {
         "no-empty": [
             0
         ],
+        "no-console": [
+            0
+        ]
     }
 };
