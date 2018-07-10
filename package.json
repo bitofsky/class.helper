@@ -1,6 +1,6 @@
 {
   "name": "class.helper",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Javascript class.helper module",
   "main": "index.js",
   "engines": {
